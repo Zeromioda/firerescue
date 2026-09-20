@@ -28,7 +28,7 @@ resources:
 
 deploy:
   auto_deploy: true
-  release_command: php artisan migrate --force
+  release_command: php artisan storage:link --force && php artisan migrate --force
   deployment_timeout_sec: 900
 
 # Use your host's secret manager for real secrets. The platform will inject these.

@@ -26,12 +26,18 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     libonig-dev \
     libxml2-dev \
     libpq-dev \
+    build-essential \
+    autoconf \
     curl \
     zip \
     && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-configure gd --with-jpeg --with-freetype \
     && docker-php-ext-install pdo_mysql pdo_pgsql zip gd bcmath
+
+# Install and enable PHP Redis extension via PECL
+RUN pecl install redis \
+    && docker-php-ext-enable redis
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
