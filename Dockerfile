@@ -76,4 +76,5 @@ RUN printf '%s\n' \
 
     EXPOSE 8000
 
-CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
+# Start with diagnostics logging
+CMD ["sh", "-c", "echo 'Starting PHP-FPM and Nginx...' && php-fpm -D && echo 'PHP-FPM started successfully' && nginx -g 'daemon off;' || (echo 'Failed to start services' && exit 1)"]

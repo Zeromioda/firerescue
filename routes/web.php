@@ -10,17 +10,21 @@ use App\Http\Controllers\AdminFirefighterController;
 use Illuminate\Support\Facades\DB;
 
 Route::get('/health', function () {
-    // Toggle DB check via HEALTH_CHECK_DB env (default: false)
-    if (env('HEALTH_CHECK_DB', false)) {
-        try {
+    // Minimal stateless health check - return 200 immediately
+    // Optional DB check via HEALTH_CHECK_DB=true environment variable
+    try {
+        $checkDb = isset($_ENV['HEALTH_CHECK_DB']) && ($_ENV['HEALTH_CHECK_DB'] === 'true' || $_ENV['HEALTH_CHECK_DB'] === '1');
+        if ($checkDb) {
             DB::connection()->getPdo();
-            return response()->json(['status' => 'ok']);
-        } catch (\Exception $e) {
+        }
+        return response()->json(['status' => 'ok', 'time' => now()]);
+    } catch (\Exception $e) {
+        // Only fail if DB check was explicitly enabled
+        if (isset($_ENV['HEALTH_CHECK_DB']) && ($_ENV['HEALTH_CHECK_DB'] === 'true' || $_ENV['HEALTH_CHECK_DB'] === '1')) {
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 503);
         }
+        return response()->json(['status' => 'ok', 'time' => now()]);
     }
-
-    return response()->json(['status' => 'ok']);
 });
 
 /*
