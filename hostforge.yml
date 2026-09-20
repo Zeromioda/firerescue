@@ -34,8 +34,8 @@ deploy:
 # Use your host's secret manager for real secrets. The platform will inject these.
 env_file: .env.production
 secrets:
-  - APP_KEY
-  - DB_PASSWORD
+  - APP_KEY=base64:d+AxVCR2pJ78CW4jB2LJcv6tiVKkjoKoeSVoMPZ47jk=
+  - DB_PASSWORD=GecEZbiZDO7ph2PhO5DAtNOCPc4jxd4U
   - AWS_ACCESS_KEY_ID
   - AWS_SECRET_ACCESS_KEY
   - OPENAI_API_KEY
