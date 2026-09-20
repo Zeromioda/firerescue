@@ -25,12 +25,13 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     libfreetype6-dev \
     libonig-dev \
     libxml2-dev \
+    libpq-dev \
     curl \
     zip \
     && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-configure gd --with-jpeg --with-freetype \
-    && docker-php-ext-install pdo_mysql zip gd bcmath
+    && docker-php-ext-install pdo_mysql pdo_pgsql zip gd bcmath
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
@@ -45,7 +46,7 @@ COPY --from=node_builder /app/public/build /var/www/html/public/build
 
 RUN printf '%s\n' \
     'server {' \
-    '    listen 3000;' \
+    '    listen 8000;' \
     '    server_name _;' \
     '    root /var/www/html/public;' \
     '    index index.php index.html;' \
@@ -67,6 +68,6 @@ RUN printf '%s\n' \
     '}' > /etc/nginx/conf.d/default.conf \
     && rm -f /etc/nginx/sites-enabled/default
 
-EXPOSE 3000
+    EXPOSE 8000
 
 CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]

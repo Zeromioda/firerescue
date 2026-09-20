@@ -10,12 +10,17 @@ use App\Http\Controllers\AdminFirefighterController;
 use Illuminate\Support\Facades\DB;
 
 Route::get('/health', function () {
-    try {
-        DB::connection()->getPdo();
-        return response()->json(['status' => 'ok']);
-    } catch (\Exception $e) {
-        return response()->json(['status' => 'error', 'message' => $e->getMessage()], 503);
+    // Toggle DB check via HEALTH_CHECK_DB env (default: false)
+    if (env('HEALTH_CHECK_DB', false)) {
+        try {
+            DB::connection()->getPdo();
+            return response()->json(['status' => 'ok']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 503);
+        }
     }
+
+    return response()->json(['status' => 'ok']);
 });
 
 /*

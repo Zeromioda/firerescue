@@ -1,0 +1,41 @@
+app:
+  name: firerescue
+  root: .
+build:
+  type: docker
+  dockerfile: Dockerfile
+  context: .
+  trigger: push
+  cache: true
+
+runtime:
+  framework: none
+  runtime_version: "20"
+  port: 8000
+  start_command: "" # empty -> use Dockerfile CMD
+
+health_check:
+  path: /health
+  port: 8000
+  interval_sec: 10
+  timeout_sec: 5
+  retries: 3
+
+resources:
+  cpu: 1.0
+  memory_mb: 512
+  restart_policy: unless-stopped
+
+deploy:
+  auto_deploy: true
+  release_command: php artisan migrate --force
+  deployment_timeout_sec: 900
+
+# Use your host's secret manager for real secrets. The platform will inject these.
+env_file: .env.production
+secrets:
+  - APP_KEY
+  - DB_PASSWORD
+  - AWS_ACCESS_KEY_ID
+  - AWS_SECRET_ACCESS_KEY
+  - OPENAI_API_KEY
